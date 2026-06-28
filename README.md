@@ -21,8 +21,38 @@ This project provides a robust, industry-standard monitoring infrastructure desi
 * **Clean Repository:** Configured `.gitignore` to prevent sensitive data files and temporary system logs from being tracked in version control.
 
 ## 📈 Architecture Overview
-[Insert your Architecture Diagram image here]
 
+```mermaid
+graph TD
+    subgraph PagerDuty_Integration
+        API[PagerDuty API]
+        Config_Key[".env File <br/> (Secure)"]
+        AlertMgr["Alertmanager <br/> ${PAGERDUTY_SERVICE_KEY}"]
+    end
+
+    subgraph Monitoring_Stack
+        Prometheus[Prometheus]
+        Loki[Loki]
+        Grafana[Grafana <br/> System-Monitoring-Service]
+        NodeExp[Node Exporter]
+        Promtail[Promtail]
+    end
+
+    %% Connections
+    AlertMgr -->|Trigger Alert| API
+    Config_Key -.->|Injects Key| AlertMgr
+    
+    Prometheus -->|Scrapes| NodeExp
+    Prometheus -->|Sends Alerts| AlertMgr
+    Prometheus -->|Query Metrics| Grafana
+    
+    Promtail -->|Pushes Logs| Loki
+    Loki -->|Query Logs| Grafana
+    
+    %% Security Context
+    Git[Local Git Repo]
+    Git -.->|Ignored| Config_Key
+```
 ## 💡 Key Learnings
 During the development of this project, I gained hands-on experience in:
 * Designing scalable monitoring architectures.

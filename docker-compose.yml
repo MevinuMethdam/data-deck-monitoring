@@ -28,6 +28,8 @@ services:
       - "3000:3000"
     volumes:
       - ./data/grafana_data:/var/lib/grafana
+    environment:
+      - TZ=Asia/Colombo
     restart: always
 
   node-exporter:
